@@ -4,7 +4,11 @@
   <% include partials/navigation %>
   <body>
     <div class="row">
+      <% include partials/flash %>
+    </div>
+    <div class="row">
       <%- body -%>
     </div>
+    <% include partials/footer-scripts %>
   </body>
 </html>
