@@ -33,66 +33,125 @@ router.post('/users/create', function(req, res, next){
   })
 });
 
-router.get('/forgot', function(req, res){
+router.get('/forgot-password', function(req, res){
   res.render('users/forgot-password', {
       title : 'Forgot Password'
   });
 });
 
-router.post('/users/forgot-password', function(req, res, next){
+
+router.post('/users/forgot-password', function(req, res, next) {
   async.waterfall([
-      function(done){
-        crypto.randomBytes(20, function(err, buf){
+      function(done) {
+        crypto.randomBytes(20, function(err, buf) {
           var token = buf.toString('hex');
           done(err, token);
         });
-      }, 
-      function(token, done){
-        User.findOne({email: req.body.email}, function(err, user){
-          if (!user){
-            req.flash('error', 'No account with that email exists');
-            return res.redirect('/forgot');
+      },
+      function(token, done) {
+        User.findOne({ email: req.body.email }, function(err, user) {
+          if (!user) {
+            req.flash('error', "Account with that email doesn't exists.");
+            return res.redirect('/users/forgot-password');
           }
-          user.resetPasswordToken   =  token;
-          user.resetPasswordExpires =  Date.now() + 3600000 // one hour
 
-          user.save(function(err){
+          user.resetPasswordToken = token;
+          user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
+
+          user.save(function(err) {
             done(err, token, user);
           });
         });
       },
-      function(token, user, done){
-
+      function(token, user, done) {
         var smtpTransport = nodemailer.createTransport(smtpTransport, {
-            host : "localhost",
-            secureConnection : false,
-            port: 587,
-            service    : 'SendGrid',
-            auth : {
-              user     : secretConfig.username,
-              password : secretConfig.password 
+            service: 'SendGrid',
+            auth: {
+              user: secretConfig.username,
+              pass: secretConfig.password 
             }
         });
-
         var mailOptions = {
-          to      : user.email,
-          from    : 'yourdaddy@dadayake.com',
-          subject : 'Password Reset',
-          text    : 'You have asked to rest your password, Please click on the following\n\n'+
-            'link or paste it into your browser to complete the process\n\n ' +
-            'http://' + req.header.host + '/reset-password/' + token + '\n\n' +
-            'if you did not request this, please ignore this email and your password will stay unchanged\n\n'+
-            'Please note that this link is valid for the next one hour\n\n'+
-            'Thanks'
+          to: user.email,
+          from: 'yourdaddy@gmail.com',
+          subject: 'Node.js Password Reset',
+          text: 'You are receiving this because you have requested the reset of the password for your account.\n\n' +
+            'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
+            'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+            'If you did not request this, please ignore this email and your password will remain unchanged.\n'
         };
-        smtpTransport.sendMail(mailOptions, function(err){
-          req.flash('info', 'An email has been sent to '+ user.email + ' with further instructions');
+        smtpTransport.sendMail(mailOptions, function(err) {
+          req.flash('info', 'An e-mail has been sent to ' + user.email + ' with further instructions.');
           done(err, 'done');
         });
       }
-  ],function(err){
+  ], function(err) {
     if (err) return next(err);
     res.redirect('/forgot');
+  });
+});
+
+router.get('/users/reset-password/:token', function(req, res){
+  User.findOne({
+      resetPasswordToken: req.params.token, 
+      resetPasswordExpires: {$gt: Date.now()}}, 
+    function(err, user){
+    if (!user) {
+      req.flash('error', 'Password reset token is either invalid or has expired')
+      return res.redirect('/forgot-password');
+    }
+    res.render('users/reset-password', {
+        title : 'Rest Password',
+        user  : user
+    })
+  });
+});
+
+router.post('/users/reset-password/:token', function(req, res) {
+  async.waterfall([
+    function(done) {
+      User.findOne({ 
+          resetPasswordToken: req.params.token, 
+          resetPasswordExpires: { $gt: Date.now() } }, 
+        function(err, user) {
+        if (!user) {
+          req.flash('error', 'Password reset token is invalid or has expired.');
+          return res.redirect('back');
+        }
+
+        user.password = req.body.password;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+
+        user.save(function(err) {
+          req.logIn(user, function(err) {
+            done(err, user);
+          });
+        });
+      });
+    },
+    function(user, done) {
+      var smtpTransport = nodemailer.createTransport(smtpTransport, {
+        service: 'SendGrid',
+        auth: {
+          user: secretConfig.username,
+          pass: secretConfig.password
+        }
+      });
+      var mailOptions = {
+        to: user.email,
+        from: 'passwordreset@demo.com',
+        subject: 'Your password has been changed',
+        text: 'Hello,\n\n' +
+          'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+      };
+      smtpTransport.sendMail(mailOptions, function(err) {
+        req.flash('success', 'Success! Your password has been changed.');
+        done(err);
+      });
+    }
+  ], function(err) {
+    res.redirect('/');
   });
 });
 
