@@ -1,6 +1,4 @@
 var session       =  require('express-session')
-var nodemailer    =  require('nodemailer');
-var async         =  require('async');
 var express       =  require('express');
 var path          =  require('path');
 var favicon       =  require('serve-favicon');
@@ -45,12 +43,6 @@ app.use(session({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-/* lets bring in our routes  */
-app.use('/', indexRoutes);
-/* app.use('/users', usersRoutes); */
-app.use(usersRoutes);
-app.use(sessionRoutes);
-
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
@@ -58,12 +50,24 @@ app.use(passport.session());
 /*
    this middleware is used to make the user object accessible
    throughout the whole request / response cycle and it has to be
-   defined after app.use(passport.session()) otherwise it won't work
+   defined after app.use(passport.session()) and before we start using
+   our routes otherwise it won't work
 */
 app.use(function(req, res, next){
   res.locals.user = req.user;
   next();
 });
+
+
+/* 
+   now lets bring in our routes, doing so before 
+   would cause our middle ware above to not work 
+*/
+app.use('/', indexRoutes);
+/* app.use('/users', usersRoutes); */
+app.use(usersRoutes);
+app.use(sessionRoutes);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
