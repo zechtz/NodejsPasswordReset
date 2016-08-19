@@ -1,0 +1,12 @@
+<% layout('index') %>
+<h1>Login </h1>
+<form action="/session/create" method="post">
+  <label for="username">Username</label>
+  <input type="text" name="username" autofocus />
+
+  <label for="password">Password</label>
+  <input type="password" name="password" autofocus />
+
+  <button class="large button success">Login</button>
+  <a class="" href="/forgot">Forgot Password?</a>
+</form>
