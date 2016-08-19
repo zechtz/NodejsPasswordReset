@@ -74,7 +74,7 @@ router.post('/users/forgot-password', function(req, res, next) {
         var mailOptions = {
           to: user.email,
           from: 'yourdaddy@gmail.com',
-          subject: 'Node.js Password Reset',
+          subject: 'Password Reset',
           text: 'You are receiving this because you have requested the reset of the password for your account.\n\n' +
             'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
             'http://' + req.headers.host + '/reset/' + token + '\n\n' +
@@ -140,13 +140,13 @@ router.post('/users/reset-password/:token', function(req, res) {
       });
       var mailOptions = {
         to: user.email,
-        from: 'passwordreset@demo.com',
-        subject: 'Your password has been changed',
+        from: 'yourdaddy@gmail.com',
+        subject: 'Password Changed',
         text: 'Hello,\n\n' +
-          'This is a confirmation that the password for your account ' + user.email + ' has just been changed.\n'
+          'The password for your account ' + user.email + ' has just been changed.\n'
       };
       smtpTransport.sendMail(mailOptions, function(err) {
-        req.flash('success', 'Success! Your password has been changed.');
+        req.flash('success', 'Your password has been changed.');
         done(err);
       });
     }
