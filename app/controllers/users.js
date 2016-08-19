@@ -72,10 +72,10 @@ router.post('/users/forgot-password', function(req, res, next) {
             }
         });
         var mailOptions = {
-          to: user.email,
-          from: 'yourdaddy@gmail.com',
-          subject: 'Password Reset',
-          text: 'You are receiving this because you have requested the reset of the password for your account.\n\n' +
+          to:       user.email,
+          from:     'yourdaddy@gmail.com',
+          subject:  'Password Reset',
+          text:     'You are receiving this because you have requested the reset of the password for your account.\n\n' +
             'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
             'http://' + req.headers.host + '/reset/' + token + '\n\n' +
             'If you did not request this, please ignore this email and your password will remain unchanged.\n'
@@ -119,9 +119,9 @@ router.post('/users/reset-password/:token', function(req, res) {
           return res.redirect('back');
         }
 
-        user.password = req.body.password;
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpires = undefined;
+        user.password             =  req.body.password;
+        user.resetPasswordToken   =  undefined;
+        user.resetPasswordExpires =  undefined;
 
         user.save(function(err) {
           req.logIn(user, function(err) {
@@ -139,10 +139,10 @@ router.post('/users/reset-password/:token', function(req, res) {
         }
       });
       var mailOptions = {
-        to: user.email,
-        from: 'yourdaddy@gmail.com',
-        subject: 'Password Changed',
-        text: 'Hello,\n\n' +
+        to      : user.email,
+        from    : 'yourdaddy@gmail.com',
+        subject : 'Password Changed',
+        text    : 'Hello,\n\n' +
           'The password for your account ' + user.email + ' has just been changed.\n'
       };
       smtpTransport.sendMail(mailOptions, function(err) {
