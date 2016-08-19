@@ -1,0 +1,19 @@
+
+<% layout('index') %>
+<h1>Sign Up </h1>
+<form action="/users/create" method="post">
+  <label for="username">Username</label>
+  <input type="text" name="username" autofocus />
+
+  <label for="email">Email</label>
+  <input type="email" name="email" autofocus />
+
+  <label for="password">Password</label>
+  <input type="password" name="password" autofocus />
+
+  <label for="confirm">Confirm Password</label>
+  <input type="password" name="confirm" autofocus />
+
+  <button class="large button success">Login</button>
+  <a class="" href="/forgot">Forgot Password?</a>
+</form>
