@@ -1,20 +1,18 @@
 var session       =  require('express-session')
-var mongoose      =  require('mongoose');
 var nodemailer    =  require('nodemailer');
 var passport      =  require('passport');
 var LocalStrategy =  require('passport-local').Strategy;
-var bcrypt        =  require('bcrypt-nodejs');
 var async         =  require('async');
-var crypto        =  require('crypto');
 var express       =  require('express');
 var path          =  require('path');
 var favicon       =  require('serve-favicon');
 var logger        =  require('morgan');
 var cookieParser  =  require('cookie-parser');
 var bodyParser    =  require('body-parser');
+var User          =  require('./app/models/user');
 
-var routes        =  require('./routes/index');
-var users         =  require('./routes/users');
+var indexRoutes   =  require('./app/controllers/index');
+var usersRoutes   =  require('./app/controllers/users');
 
 var app           =  express();
 
@@ -31,8 +29,8 @@ app.use(cookieParser());
 app.use(session({ secret: 'session secret key' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', routes);
-app.use('/users', users);
+app.use('/', indexRoutes);
+app.use('/users', usersRoutes);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
