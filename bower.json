@@ -1,0 +1,29 @@
+{
+  "name": "passport",
+  "description": "a node js app",
+  "main": "app.js",
+  "authors": [
+    "Mtabe"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "node",
+    "app",
+    "es6"
+  ],
+  "homepage": "https://github.com:zechtz/password",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "foundation": "~5.5.3",
+    "simple-line-icons": "~2.3.2",
+    "lato": "~0.3.0",
+    "font-awesome": "~4.6.3" 
+  }
+}
