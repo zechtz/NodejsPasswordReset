@@ -21,8 +21,10 @@ router.post('/session/create', function(req, res, next){
   })(req, res, next)
 });
 
-router.post('/session/destroy', function(req, res){
+router.get('/logout', function(req, res){
   req.logout();
-  res.rediret('/');
+  res.redirect('/');
+  req.session.destroy();
 });
+
 module.exports = router;
