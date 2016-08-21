@@ -34,6 +34,10 @@ router.post('/users/create', function(req, res, next){
 });
 
 router.get('/forgot-password', function(req, res){
+  if (req.user){
+    req.flash('info', "You are already logged in");
+    return res.redirect('/');
+  }
   res.render('users/forgot-password', {
       title : 'Forgot Password'
   });
@@ -64,11 +68,11 @@ router.post('/users/forgot-password', function(req, res, next) {
         });
       },
       function(token, user, done) {
-        var smtpTransport = nodemailer.createTransport(smtpTransport, {
-            service: 'SendGrid',
+        var smtpTransport = nodemailer.createTransport({
+            service: 'Gmail',
             auth: {
-              user: secretConfig.username,
-              pass: secretConfig.password 
+              user: secretConfig.Gmail.username,
+              pass: secretConfig.Gmail.password 
             }
         });
         var mailOptions = {
@@ -77,7 +81,7 @@ router.post('/users/forgot-password', function(req, res, next) {
           subject:  'Password Reset',
           text:     'You are receiving this because you have requested the reset of the password for your account.\n\n' +
             'Please click on the following link, or paste this into your browser to complete the process:\n\n' +
-            'http://' + req.headers.host + '/reset/' + token + '\n\n' +
+            'http://' + req.headers.host + '/users/reset-password/' + token + '\n\n' +
             'If you did not request this, please ignore this email and your password will remain unchanged.\n'
         };
         smtpTransport.sendMail(mailOptions, function(err) {
@@ -87,7 +91,7 @@ router.post('/users/forgot-password', function(req, res, next) {
       }
   ], function(err) {
     if (err) return next(err);
-    res.redirect('/forgot');
+    res.redirect('/');
   });
 });
 
@@ -131,12 +135,12 @@ router.post('/users/reset-password/:token', function(req, res) {
       });
     },
     function(user, done) {
-      var smtpTransport = nodemailer.createTransport(smtpTransport, {
-        service: 'SendGrid',
-        auth: {
-          user: secretConfig.username,
-          pass: secretConfig.password
-        }
+      var smtpTransport = nodemailer.createTransport({
+          service: 'SendGrid', // change to SendGrid if you're using sendgrid 
+          auth: {
+            user: secretConfig.SendGrid.username, // user secretConfig.SendGrid.username if you're using sendgrid
+            pass: secretConfig.SendGrid.password  // use secretConfig.SendGrid.password if you're using sendgrind 
+          }
       });
       var mailOptions = {
         to      : user.email,
