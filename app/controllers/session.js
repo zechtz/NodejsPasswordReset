@@ -5,9 +5,14 @@ var passportConfig =  require('../../config/passport')
 
 /* GET login page. */
 router.get('/login', function(req, res, next) {
+  if (req.user){
+    req.flash('info', "You are already logged in");
+    return res.redirect('/');
+  } 
   res.render('sessions/new', { 
       title : 'Login'
-    });
+  });
+  next();
 });
 
 router.post('/session/create', function(req, res, next){
