@@ -3,8 +3,8 @@
 A simple nodejs Example App implementing the reset password feature
 
 ## Using 
-- `git clone https://github.com/zechtz/nodejsPasswordRestApp` 
-- `cd nodejsPasswordRestApp`
+- `git clone https://github.com/zechtz/NodejsPasswordReset.git` 
+- `cd NodejsPasswordReset`
 - Run `npm install && bower install`
 - Rename the config/secrets.sample.js file to config/secrets.js and add the correct credentials 
 
