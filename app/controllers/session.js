@@ -19,8 +19,9 @@ router.post('/session/create', function(req, res, next){
     if (err) return next(err);
     if (!user) return res.redirect('/login');
     req.login(user, function(err){
-      if (err) return next(err)
-        return res.redirect('/');
+      if (err) return next(err);
+      req.flash('success', "Successfully logged in!");
+      return res.redirect('/');
     });
   })(req, res, next)
 });
