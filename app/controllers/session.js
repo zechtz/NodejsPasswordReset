@@ -4,7 +4,7 @@ var router         =  express.Router();
 var passportConfig =  require('../../config/passport')
 
 /* GET login page. */
-router.get('/login', function(req, res, next) {
+router.get('/login', function(req, res) {
   if (req.user){
     req.flash('info', "You are already logged in");
     return res.redirect('/');
@@ -12,7 +12,6 @@ router.get('/login', function(req, res, next) {
   res.render('sessions/new', { 
       title : 'Login'
   });
-  next();
 });
 
 router.post('/session/create', function(req, res, next){
